@@ -609,7 +609,39 @@ public class WebViewDialog extends Dialog {
           String host,
           String realm
         ) {
-          handler.useHttpAuthUsernamePassword();          
+          // Show a dialog to collect username and password
+          AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext());
+          builder.setTitle("Authentication Required");
+
+          // Set up the input fields for username and password
+          final EditText inputUsername = new EditText(view.getContext());
+          inputUsername.setHint("Username");
+          final EditText inputPassword = new EditText(view.getContext());
+          inputPassword.setHint("Password");
+          inputPassword.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
+
+          LinearLayout layout = new LinearLayout(view.getContext());
+          layout.setOrientation(LinearLayout.VERTICAL);
+          layout.addView(inputUsername);
+          layout.addView(inputPassword);
+          builder.setView(layout);
+
+          builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+              String username = inputUsername.getText().toString();
+              String password = inputPassword.getText().toString();
+              handler.proceed(username, password); // Proceed with the provided credentials
+            }
+          });
+          builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+              handler.cancel(); // Cancel the authentication request
+            }
+          });
+
+          builder.show(); // Show the dialog
         }
 
         @Override
